@@ -28,6 +28,13 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Dates</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="sortButton">
         <property name="text">
          <string>Sort fruits</string>
