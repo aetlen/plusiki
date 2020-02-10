@@ -16,7 +16,7 @@ public:
     }
     // Доступ по индексу
     T& operator[](size_t index){
-        if (a) return a[index];
+        return a[index];
     };
     // Размер```s
     size_t size(){
