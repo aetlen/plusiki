@@ -56,8 +56,26 @@ void MainWindow::on_sortButton_clicked()
 
 void MainWindow::on_clearButton_clicked()
 {
+    QStringList citrus = {"orange", "lemon"};
+    // Amount of lines
+    int sz = ui->plainTextEdit->blockCount();
+    // Vector exactly of its size
+    auto vec = new Vector<string>(sz);
+    QString text = ui->plainTextEdit->toPlainText();
+    QTextStream * stream = new QTextStream(&text , QIODevice::ReadOnly);
+    // Double condition in case the text has been changed
+    for (int n=0; !stream->atEnd() && n < sz; n++)
+    {
+        (*vec)[n] = stream->readLine().toStdString();
+    }
     ui->plainTextEdit->setStyleSheet("");
     ui->plainTextEdit->clear();
+    for (auto n = 0; n < sz; n++){
+        auto str = QString::fromStdString((*vec)[n]);
+        if (!citrus.contains(str)) ui->plainTextEdit->appendPlainText(str);
+    }
+    delete(vec);
+    delete(stream);
 }
 
 void MainWindow::on_aButton_clicked()

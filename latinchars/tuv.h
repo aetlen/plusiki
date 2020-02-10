@@ -9,10 +9,12 @@ template <class T> class Vector {
 public:
     explicit Vector(size_t amount){
         a = (T*) malloc(amount*sizeof(T));
+        //a = new T[amount]
         n=amount;
     };
     ~Vector(){
         free(a);
+        //delete[] a;
     }
     // Доступ по индексу
     T& operator[](size_t index){
