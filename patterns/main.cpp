@@ -16,11 +16,11 @@ public:
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QTextEditAdapter *adapter = new QTextEditAdapter();
+    QTextEdit *adapter = new QTextEditAdapter();
     std::string intro = "<b>Artom</b>";
-    adapter->setText(intro);
+    ((QTextEditAdapter* ) adapter)->setText(intro);
     adapter->append("loch");
     // std::string res = adapter.toplaintext();
-    ((QTextEditAdapter* )adapter)->show();
+    adapter->show();
     return a.exec();
 }
