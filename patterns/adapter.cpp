@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QTextEdit>
 #include <string>
-#include <QString>
 
 class QTextEditAdapter : public QTextEdit{
 public:
@@ -11,6 +10,9 @@ public:
     void append(const std::string &text){
         QTextEdit::append(QString::fromStdString(text));
     }
+    std::string toPlainText(){
+        return QTextEdit::toPlainText().toStdString();
+    }
 };
 
 int main(int argc, char *argv[])
@@ -19,8 +21,8 @@ int main(int argc, char *argv[])
     QTextEdit *adapter = new QTextEditAdapter();
     std::string intro = "<b>Artom</b>";
     ((QTextEditAdapter* ) adapter)->setText(intro);
-    adapter->append("loch");
-    // std::string res = adapter.toplaintext();
+    ((QTextEditAdapter* ) adapter)->append((std::string) "loch");
+    std::string res = ((QTextEditAdapter* ) adapter)->toPlainText();
     adapter->show();
     return a.exec();
 }
