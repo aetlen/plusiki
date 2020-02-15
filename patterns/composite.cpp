@@ -3,6 +3,8 @@
 #include <iostream>
 #include <memory>
 
+const int CHILD_COUNT = 10;
+
 class FileSystemInterface {
 public:
     virtual QString name() = 0; // Получить имя папки/файла
@@ -17,22 +19,22 @@ public:
 
 class File : public FileSystemInterface{
 public:
-    QString name(){
+    QString name() override{
         return nm;
     }
-    void name(QString new_name){
+    void name(QString new_name) override{
         nm = new_name;
     }
-    bool isFolder(){
+    bool isFolder() override{
         return false;
     };
-    bool isFile(){
+    bool isFile() override{
         return true;
     }
-    int count(){
+    int count() override{
         return 1;
     }
-    QString toString(){
+    QString toString() override{
         return nm;
     }
 private:
@@ -40,31 +42,31 @@ private:
 };
 
 class Directory : public FileSystemInterface{
-    typedef FileSystemInterface* FPtr;
+    using FPtr = FileSystemInterface *;
 public:
-    QString name(){
+    QString name() override{
         return nm;
     }
     void add(FPtr child){
         children.push_back(child);
     }
-    void name(QString new_name){
+    void name(QString new_name) override{
         nm = new_name;
     }
-    bool isFolder(){
+    bool isFolder() override{
         return true;
     };
-    bool isFile(){
+    bool isFile() override{
         return false;
     }
-    int count(){
+    int count() override{
         int i = 0;
         for (auto c: children){
             i+=c->count();
         }
         return i;
     }
-    QString toString(){
+    QString toString() override{
         QString allofthem;
         allofthem.append(nm);
         allofthem.append(":\n");
@@ -83,16 +85,16 @@ private:
 
 int main()
 {
-    Directory *dir = new Directory();
+    auto dir = new Directory();
     dir->name("ROOT");
-    for (int i=0; i<10; i++){
+    for (int i=0; i< CHILD_COUNT; i++){
         auto f = new File();
         f->name(QString("File #%1").arg(i));
         dir->add(f);
     }
-    Directory *dir2 = new Directory();
+    auto dir2 = new Directory();
     dir2->name("ULTRA");
-    for (int i=0; i<10; i++){
+    for (int i=0; i< CHILD_COUNT; i++){
         auto f = new File();
         f->name(QString("Ultrafile #%1").arg(i));
         dir2->add(f);
