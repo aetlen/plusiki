@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QString>
 #include <iostream>
-#include <memory>
 
 const int CHILD_COUNT = 10;
 
