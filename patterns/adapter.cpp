@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QTextEdit *adapter = new QTextEditAdapter();
     std::string intro = "<b>Artom</b>";
-    ((QTextEditAdapter* ) adapter)->setText(intro);
-    ((QTextEditAdapter* ) adapter)->append((std::string) "loch");
-    std::string res = ((QTextEditAdapter* ) adapter)->toPlainText();
+    (dynamic_cast<QTextEditAdapter*>( adapter))->setText(intro);
+    (dynamic_cast<QTextEditAdapter*>( adapter))->append((std::string) "loch");
+    std::string res = (dynamic_cast<QTextEditAdapter*>( adapter))->toPlainText();
     adapter->show();
-    return a.exec();
+    return QApplication::exec();
 }
