@@ -18,11 +18,14 @@ public:
     ~MainWindow();
     QStandardItemModel* model = new QStandardItemModel();
     QDataWidgetMapper *mapper = new QDataWidgetMapper;
+    void storeXML(QString path);
 
 private slots:
     void on_addButton_clicked();
 
     void on_contactlist_clicked(const QModelIndex &index);
+
+    void on_saveButton_clicked();
 
 private:
     Ui::MainWindow *ui;

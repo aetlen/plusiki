@@ -5,6 +5,8 @@
 #include <QString>
 #include <QStringList>
 #include <QList>
+#include <QDomDocument>
+#include <QDomElement>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -44,4 +46,39 @@ void MainWindow::on_addButton_clicked()
 void MainWindow::on_contactlist_clicked(const QModelIndex &index)
 {
     mapper->setCurrentIndex(index.row());
+}
+
+void MainWindow::storeXML(QString path){
+    QDomDocument doc("contacts");
+    auto root = doc.createElement("contacts");
+    for (auto i = 0; i < model->rowCount(); i++){
+        QString firstname = model->data(model->index(i, 0)).toString();
+        QString lastname = model->data(model->index(i, 1)).toString();
+        QString country = model->data(model->index(i, 2)).toString();
+        QString city = model->data(model->index(i, 3)).toString();
+
+        QDomElement el = doc.createElement("contact");
+        QDomElement Identiefer = doc.createElement("Identiefer");
+        Identiefer.setAttribute("firstname", firstname);
+        Identiefer.setAttribute("lastname", lastname);
+        QDomElement Address = doc.createElement("Address");
+        Address.setAttribute("country", country);
+        Address.setAttribute("city", city);
+        el.appendChild(Address);
+        el.appendChild(Identiefer);
+        root.appendChild(el);
+    }
+    doc.appendChild(root);
+    QFile file(path);
+    if(file.open(QIODevice::WriteOnly)) {
+        QString text_xml = doc.toString();
+        qDebug() << text_xml;
+        QTextStream(&file) << text_xml;
+        file.close();
+    }
+}
+
+void MainWindow::on_saveButton_clicked()
+{
+    storeXML("adressbook.xml");
 }
