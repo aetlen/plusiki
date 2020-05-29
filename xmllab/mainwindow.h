@@ -17,7 +17,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     QStandardItemModel* model = new QStandardItemModel();
-    QDataWidgetMapper *mapper = new QDataWidgetMapper;
+    QDataWidgetMapper *mapper = new QDataWidgetMapper();
     void storeXML(QString path);
 
 private slots:
@@ -26,6 +26,10 @@ private slots:
     void on_contactlist_clicked(const QModelIndex &index);
 
     void on_saveButton_clicked();
+
+    void on_deleteButton_clicked();
+
+    void on_atrkitButton_clicked();
 
 private:
     Ui::MainWindow *ui;

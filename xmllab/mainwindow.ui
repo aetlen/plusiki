@@ -37,6 +37,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="atrkitButton">
+          <property name="text">
+           <string>Аткрыть</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="saveButton">
           <property name="text">
            <string>Save</string>
@@ -115,12 +122,35 @@
           <string>Phones</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QPlainTextEdit" name="numlistWidget">
-            <property name="placeholderText">
-             <string>Type num</string>
+          <item row="1" column="0">
+           <widget class="QLineEdit" name="mnumEdit"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>At work</string>
             </property>
            </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Home #</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Mobile #</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLineEdit" name="hnumEdit"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLineEdit" name="wnumEdit"/>
           </item>
          </layout>
         </widget>

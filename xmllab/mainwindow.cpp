@@ -7,6 +7,9 @@
 #include <QList>
 #include <QDomDocument>
 #include <QDomElement>
+#include <QFile>
+// Method 1 = DOM, 0 = SEX
+#define method 1
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,8 +23,11 @@ MainWindow::MainWindow(QWidget *parent)
     mapper->addMapping(ui->lnameEdit, 1);
     mapper->addMapping(ui->countryEdit, 2);
     mapper->addMapping(ui->cityEdit, 3);
-    mapper->addMapping(ui->numlistWidget, 4);
-    mapper->addMapping(ui->emailEdit, 5);
+    mapper->addMapping(ui->emailEdit, 4);
+    mapper->addMapping(ui->mnumEdit, 5);
+    mapper->addMapping(ui->hnumEdit, 6);
+    mapper->addMapping(ui->wnumEdit, 7);
+
     mapper->toFirst();
     ui->contactlist->setModel(model);
 }
@@ -37,10 +43,11 @@ void MainWindow::on_addButton_clicked()
     auto row = new QStandardItem();
     row->setText("Contact");
     model->appendRow(row);
-    if (ui->dataFrame->isHidden())
+    if (ui->dataFrame->isHidden()){
         mapper->setCurrentIndex(0);
         ui->contactlist->setCurrentIndex(model->index(0,0));
         ui->dataFrame->show();
+    }
 }
 
 void MainWindow::on_contactlist_clicked(const QModelIndex &index)
@@ -56,6 +63,7 @@ void MainWindow::storeXML(QString path){
         QString lastname = model->data(model->index(i, 1)).toString();
         QString country = model->data(model->index(i, 2)).toString();
         QString city = model->data(model->index(i, 3)).toString();
+        QString email = model->data(model->index(i, 4)).toString();
 
         QDomElement el = doc.createElement("contact");
         QDomElement Identiefer = doc.createElement("Identiefer");
@@ -64,8 +72,20 @@ void MainWindow::storeXML(QString path){
         QDomElement Address = doc.createElement("Address");
         Address.setAttribute("country", country);
         Address.setAttribute("city", city);
+        QDomElement Phones = doc.createElement("Phones");
+        for (int numid = 5; numid <=7; numid++){
+            QDomElement Phone = doc.createElement("Phone");
+            QString num = model->data(model->index(i, numid)).toString();
+            Phone.setAttribute("number", num);
+            Phone.setAttribute("type", numid);
+            Phones.appendChild(Phone);
+        }
+        QDomElement Email = doc.createElement("Email");
+        Email.setAttribute("email", email);
         el.appendChild(Address);
         el.appendChild(Identiefer);
+        el.appendChild(Phones);
+        el.appendChild(Email);
         root.appendChild(el);
     }
     doc.appendChild(root);
@@ -82,3 +102,79 @@ void MainWindow::on_saveButton_clicked()
 {
     storeXML("adressbook.xml");
 }
+
+void MainWindow::on_deleteButton_clicked()
+{
+
+}
+
+#if method
+void MainWindow::on_atrkitButton_clicked()
+{
+    model->clear();
+    qDebug() << "DOM";
+    QDomDocument document;
+    //load the file
+    QFile xmlFile("adressbook.xml");
+    if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
+        qDebug() << "Check your file";
+        return;
+    }
+    QDomDocument domDocument;
+    domDocument.setContent(&xmlFile);
+    QDomElement topElement = domDocument.documentElement();
+    QDomNode contactNode = topElement.firstChild();
+    int contnum = 0;
+    while (!contactNode.isNull()){
+        QDomElement contactElement = contactNode.toElement();
+        if (contactElement.tagName() == "contact"){
+              QDomNode node = contactElement.firstChild();
+              auto row = new QStandardItem();
+              row->setText("Contact");
+              model->appendRow(row);
+              while (!node.isNull()){
+                 QDomElement element = node.toElement();
+                 if (element.tagName() == "Identiefer"){
+                     QStandardItem *item = new QStandardItem(element.attribute("firstname"));
+                     model->setItem(contnum, 0, item);
+                     QStandardItem *item2 = new QStandardItem(element.attribute("lastname"));
+                     model->setItem(contnum, 1, item2);
+                 }
+                 else if (element.tagName() == "Address"){
+                     QStandardItem *item = new QStandardItem(element.attribute("country"));
+                     model->setItem(contnum, 2, item);
+                     QStandardItem *item2 = new QStandardItem(element.attribute("city"));
+                     model->setItem(contnum, 3, item2);
+                 }
+                 else if (element.tagName() == "Email"){
+                         QStandardItem *item = new QStandardItem(element.attribute("email"));
+                         model->setItem(contnum, 4, item);
+                 }
+                 else if (element.tagName() == "Phones"){
+                     auto pnode = element.firstChild();
+                     while (!pnode.isNull()){
+                         QDomElement pelement = pnode.toElement();
+                         QStandardItem *item = new QStandardItem(pelement.attribute("number"));
+                         model->setItem(contnum, pelement.attribute("type").toInt(), item);
+                         pnode = pnode.nextSibling();
+                     }
+                 }
+                 node = node.nextSibling();
+              }
+              contnum++;
+        }
+        contactNode = contactNode.nextSibling();
+    }
+    if (ui->dataFrame->isHidden()){
+        mapper->setCurrentIndex(0);
+        ui->contactlist->setCurrentIndex(model->index(0,0));
+        ui->dataFrame->show();
+    }
+}
+#else
+void MainWindow::on_atrkitButton_clicked()
+{
+    qDebug() << "SAX";
+}
+#endif
+
