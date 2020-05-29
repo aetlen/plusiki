@@ -8,8 +8,9 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QFile>
-// Method 1 = DOM, 0 = SEX
-#define method 1
+#include <QXmlSimpleReader>
+// Method 1 = DOM, 0 = SAX
+#define method 0
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -171,10 +172,108 @@ void MainWindow::on_atrkitButton_clicked()
         ui->dataFrame->show();
     }
 }
+
 #else
+class AddressBookParser : public QXmlDefaultHandler {
+public:
+    QStandardItemModel* model;
+    bool startElement(const QString&,
+                      const QString&,
+                      const QString &tagName,
+                      const QXmlAttributes& attrs
+                     )
+    {
+        if (tagName =="contact")
+        {
+            auto row = new QStandardItem();
+            row->setText("contact");
+            model->appendRow(row);
+        }
+        if (tagName == "Phone")
+        {
+            int type;
+            QString num;
+            for (int i = 0; i< attrs.count();i++)
+            {
+                if (attrs.localName(i)=="type")
+                    type = attrs.value(i).toInt();
+                if (attrs.localName(i)=="number")
+                    num = attrs.value(i);
+            }
+            QStandardItem *item = new QStandardItem(num);
+            model->setItem(cur_num, type, item);
+        }
+        for(int i = 0; i < attrs.count(); i++) {
+            if(attrs.localName(i) == "country") {
+                QStandardItem *item = new QStandardItem(attrs.value(i));
+                model->setItem(cur_num, 2, item);
+            }
+            if(attrs.localName(i) == "city") {
+                QStandardItem *item = new QStandardItem(attrs.value(i));
+                model->setItem(cur_num, 3, item);
+            }
+            if(attrs.localName(i) == "firstname") {
+                QStandardItem *item = new QStandardItem(attrs.value(i));
+                model->setItem(cur_num, 0, item);
+            }
+            if(attrs.localName(i) == "lastname") {
+                QStandardItem *item = new QStandardItem(attrs.value(i));
+                model->setItem(cur_num, 1, item);
+            }
+            if(attrs.localName(i) == "email") {
+                QStandardItem *item = new QStandardItem(attrs.value(i));
+                model->setItem(cur_num, 4, item);
+            }
+            if(attrs.localName(i) == "type") {
+            }
+            if(attrs.localName(i) == "number") {
+            }
+        }
+        return true;
+    }
+
+    bool characters(const QString& strText)
+    {
+        m_strText = strText;
+        return true;
+    }
+
+    bool endElement(const QString&, const QString&, const QString& str)
+    {
+            qDebug() << "TagName:" << str
+                     << "\tText:"  << m_strText;
+            if (str=="contact")
+                cur_num++;
+        return true;
+    }
+
+    bool fatalError(const QXmlParseException& exception)
+    {
+        qDebug() << "Line:"      << exception.lineNumber()
+                 << ", Column:"  << exception.columnNumber()
+                 << ", Message:" << exception.message();
+        return false;
+    }
+private:
+    QString m_strText;
+    int cur_num = 0;
+};
+
 void MainWindow::on_atrkitButton_clicked()
 {
+    model->clear();
     qDebug() << "SAX";
+    AddressBookParser handler;
+    QFile             file("adressbook.xml");
+    QXmlInputSource   source(&file);
+    QXmlSimpleReader  reader;
+    handler.model = model;
+    reader.setContentHandler(&handler);
+    reader.parse(source);
+    if (ui->dataFrame->isHidden()){
+        mapper->setCurrentIndex(0);
+        ui->contactlist->setCurrentIndex(model->index(0,0));
+        ui->dataFrame->show();
+    }
 }
 #endif
-
