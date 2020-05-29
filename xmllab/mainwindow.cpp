@@ -9,6 +9,7 @@
 #include <QDomElement>
 #include <QFile>
 #include <QXmlSimpleReader>
+#include <QInputDialog>
 // Method 1 = DOM, 0 = SAX
 #define method 0
 
@@ -240,8 +241,6 @@ public:
 
     bool endElement(const QString&, const QString&, const QString& str)
     {
-            qDebug() << "TagName:" << str
-                     << "\tText:"  << m_strText;
             if (str=="contact")
                 cur_num++;
         return true;
@@ -277,3 +276,32 @@ void MainWindow::on_atrkitButton_clicked()
     }
 }
 #endif
+
+void MainWindow::on_searchButton_clicked()
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Search"),
+                                         tr("Search:"), QLineEdit::Normal,
+                                         "Whatever you're interested in", &ok);
+    if (ok && !text.isEmpty()){
+        // Num of the last result
+        int num = -1;
+        // Search
+        for (int i = model->rowCount(); i >= 0; i--){
+            int searches[] = {0, 1, 5, 6, 7};
+            for (auto l : searches){
+                QString val = model->data(model->index(i, l)).toString();
+                qDebug() << val;
+                if (val.contains(text))
+                    num = i;
+            }
+        }
+        if (num == -1){
+            qDebug() << "Not found: " << text;
+        }
+        else{
+            ui->contactlist->setCurrentIndex(model->index(num,0));
+            mapper->setCurrentIndex(num);
+        }
+    }
+}
