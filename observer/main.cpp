@@ -1,8 +1,9 @@
+#include <QApplication>
+#include <QDebug>
 #include <QString>
 #include <QTextEdit>
 #include <QObject>
-#include <QApplication>
-#include <QDebug>
+#include <QPushButton>
 
 using namespace std;
 class Handler : public QObject{
@@ -100,13 +101,34 @@ private:
     QTextEdit* te = nullptr;
 };
 
+class btnHandler: public Handler{
+public:
+    void setName(QString){};
+    btnHandler() = default;
+    concreteObserver *co;
+    Handler * te;
+public slots:
+    void notify(/*Опциональные параметры*/){
+        static int a = 0;
+        co->subscribe(te, a++);
+    };
+};
+
 int main(int argc, char** argv)
 {
     QApplication a(argc, argv);
     QTextEdit *te = new QTextEdit();
     concreteObserver co(te);
-    curHandler cr; teHandler th; selHandler sel;
-    co.subscribe(&cr,0); co.subscribe(&th,2); co.subscribe(&sel,1);
+    const int num = 1;
+    QPushButton *btn = new QPushButton();
+    btnHandler btnh;
+    teHandler th;
+    btnh.co = &co;
+    btnh.te = &th;
+    QObject::connect(btn,&QPushButton::clicked, &btnh, &btnHandler::notify);
+    //curHandler cr; teHandler th; selHandler sel;
+    //co.subscribe(&cr,0); co.subscribe(&th,2); co.subscribe(&sel,1);
+    btn->show();
     te->show();
     return a.exec();
 }

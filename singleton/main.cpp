@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <cstring>
+#include <QApplication>
 using namespace std;
 
 class globalStorage{
@@ -24,7 +25,7 @@ public:
         return res;
     }
 private:
-    globalStorage(){}
+    globalStorage(){};
     globalStorage(const globalStorage& root) = delete;
     globalStorage& operator=(const globalStorage&) = delete;
     map<string, string> data;
@@ -32,11 +33,12 @@ private:
 
 int main()
 {
+    QApplication *app = new QApplication;
     globalStorage* storage = globalStorage::getInstance();
     storage->save("Ключ", "Значение"); // Сохраняем данные
     storage->save("Другой ключ", "Другое значение");
     storage->save("Ключ", "Новое значение"); // Обновляем данные
     storage->get("Ключ"); // Возвращает "Новое значение"
     cout << globalStorage::getInstance()->toString();
-    return 0;
+    return app->exec();
 }
