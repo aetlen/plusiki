@@ -9,8 +9,10 @@ class Otchislyator : public QObject
 public:
     explicit Otchislyator(QObject *parent = nullptr);
 
+public slots:
+    void someSlot();
 signals:
-
+    void expell(QString *reason);
 };
 
 #endif // OTCHISLYATOR_H
