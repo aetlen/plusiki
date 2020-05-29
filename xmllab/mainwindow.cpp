@@ -107,7 +107,7 @@ void MainWindow::on_saveButton_clicked()
 
 void MainWindow::on_deleteButton_clicked()
 {
-
+    model->removeRows(ui->contactlist->currentIndex().row(),1);
 }
 
 #if method
